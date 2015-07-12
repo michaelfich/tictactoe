@@ -1,1 +1,4 @@
-# tictactoe
+# Tic Tac Toe
+
+A Superman vs. Batman themed Tic Tac Toe game created with the use of
+HTML, CSS and Javascript!
