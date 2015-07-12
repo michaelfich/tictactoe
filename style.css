@@ -1,0 +1,38 @@
+.container {
+  overflow: auto;
+  width: 1200px;
+  margin: 40px auto 0;
+}
+
+#board {
+  height: 600px;
+  width: 600px;
+  overflow: auto;
+  float: left;
+}
+
+.player {
+  margin: 200px 50px 0;
+  height: 200px;
+  width: 200px;
+  float: left;
+  border-radius: 100px;
+}
+
+.player, .row {
+  overflow: auto;
+}
+
+.box {
+  float: left;
+  height: 200px;
+  width: 200px;
+}
+
+.row:nth-child(even) > .box:nth-child(even) { background-color: rgba(164, 55, 65, 1); }
+.row:nth-child(even) > .box:nth-child(odd) { background-color: rgba(128, 21, 21, 1); }
+.row:nth-child(odd) > .box:nth-child(even) { background-color: rgba(128, 21, 21, 1); }
+.row:nth-child(odd) > .box:nth-child(odd) { background-color: rgba(164, 55, 65, 1); }
+
+.batman { background-image: url('images/batman.jpg'); }
+.superman { background-image: url('images/superman.jpg'); }
