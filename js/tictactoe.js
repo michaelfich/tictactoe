@@ -1,9 +1,23 @@
 $(document).ready(function() {
-  var counter = 0;
-  var gameBoard = [];
-  var winner = undefined;
-  var turn = 0;
-  var winningMoves;
+  var counter, gameBoard, turn, winner, winningMoves;
+
+  function newGame() {
+    counter = 0;
+    gameBoard = [];
+    turn = Math.round(Math.random());
+    winner = undefined;
+    winningMoves = undefined;
+
+    var players = $("aside");
+    players.removeClass("selected");
+    players.eq(turn).addClass("selected");
+
+    $("div.box").removeClass("batman superman loser");
+    $("#winner").removeClass("batman superman");
+
+    var first = (turn) ? "Superman" : "Batman";
+    $("header.message").html(first + " gets to play first.");
+  }
 
   function selectedPlayer() {
     if (turn === 0) {
@@ -24,28 +38,8 @@ $(document).ready(function() {
     selectedPlayer();
   }
 
+  newGame();
   selectedPlayer();
-
-  $("div.box").on("click", function() {
-    var player = counter % 2;
-    var index = $("div.box").index(this);
-    var row = Math.floor(index / 3);
-    var column = index % 3;
-
-    if (winner !== undefined) return false;
-    if (!legalMove(index)) return false;
-
-    (player) ? $(this).addClass("superman") : $(this).addClass("batman");
-
-    placeTokenOnBoard(player, index);
-
-    if ((checkRow(row)) || (checkColumn(column)) || (checkDiagonal())) {
-      showWinner(winner);
-    }
-
-    counter++;
-    switchTurn();
-  });
 
   function placeTokenOnBoard(player, position) {
     gameBoard[position] = player;
@@ -56,24 +50,24 @@ $(document).ready(function() {
   }
 
   function checkRow(i) {
-    return checkValuesForThreeBoxes((i * 3), (i * 3) + 1, (i * 3) + 2);
+    return checkThreeValues((i * 3), (i * 3) + 1, (i * 3) + 2);
   }
 
   function checkColumn(i) {
-    return checkValuesForThreeBoxes(i, i + 3, i + 6);
+    return checkThreeValues(i, i + 3, i + 6);
   }
 
   function checkDiagonal() {
-    if (checkValuesForThreeBoxes(0, 4, 8)) {
+    if (checkThreeValues(0, 4, 8)) {
       return true;
     }
 
-    if (checkValuesForThreeBoxes(2, 4, 6)) {
+    if (checkThreeValues(2, 4, 6)) {
       return true;
     }
   }
 
-  function checkValuesForThreeBoxes(one, two, three) {
+  function checkThreeValues(one, two, three) {
     if ( (gameBoard[one] !== undefined)
       && (gameBoard[one] == gameBoard[two])
       && (gameBoard[one] == gameBoard[three])) {
@@ -84,16 +78,60 @@ $(document).ready(function() {
   }
 
   function showWinner(winner) {
-    if (winner) {
-      console.log("Winner: Superman");
-    } else {
-      console.log("Winner: Batman");
-    }
+    var message = $("header.message"),
+        banner = $("#winner");
 
-    for (var x = 0; x < 9; x++) {
-      if (winningMoves.indexOf(x) == -1) {
-        $("div.box").eq(x).addClass("loser");
+    if (winner !== undefined) {
+      if (winner) {
+        banner.addClass("superman");
+        message.html("Superman defeats Batman!");
+        switchTurn();
+      } else {
+        banner.addClass("batman");
+        message.html("Batman defeats Superman!");
+        switchTurn();
       }
+      for (var x = 0; x < 9; x++) {
+        if (winningMoves.indexOf(x) == -1) {
+          $("div.box").eq(x).addClass("loser");
+        }
+      }
+    } else {
+      $("aside").removeClass("selected");
+      $("div.box").addClass("loser");
+      message.html("The game has ended in a draw");
     }
   }
+
+  $("#new-game").on("click", function(e) {
+    newGame();
+    e.preventDefault();
+  });
+
+  $("div.box").on("click", function() {
+    var index = $("div.box").index(this);
+    var row = Math.floor(index / 3);
+    var column = index % 3;
+
+    $("header.message").html("");
+
+    if (winner !== undefined) return false;
+    if (!legalMove(index)) return false;
+
+    (turn) ? $(this).addClass("superman") : $(this).addClass("batman");
+
+    placeTokenOnBoard(turn, index);
+
+    if ((checkRow(row)) || (checkColumn(column)) || (checkDiagonal())) {
+      showWinner(winner);
+    }
+
+    switchTurn();
+
+    if ((counter === 8) && (winner === undefined)) {
+      showWinner(undefined)
+    }
+
+    counter++;
+  });
 });
