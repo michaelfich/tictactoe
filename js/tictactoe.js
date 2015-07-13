@@ -1,5 +1,6 @@
 $(document).ready(function() {
-  var counter, gameBoard, turn, winner, winningMoves;
+  var counter, gameBoard, scores, turn, winner, winningMoves;
+  var scores = [0, 0];
 
   function newGame() {
     counter = 0;
@@ -12,11 +13,19 @@ $(document).ready(function() {
     players.removeClass("selected");
     players.eq(turn).addClass("selected");
 
-    $("div.box").removeClass("batman superman loser");
     $("#winner").removeClass("batman superman");
+    $("div.box").removeClass("batman superman loser");
+
+    displayScores();
 
     var first = (turn) ? "Superman" : "Batman";
     $("header.message").html(first + " gets to play first.");
+  }
+
+  function displayScores() {
+    for (var i = 0; i < 2; i++) {
+      $("div.score").eq(i).html(scores[i]);
+    }
   }
 
   function selectedPlayer() {
@@ -37,9 +46,6 @@ $(document).ready(function() {
     }
     selectedPlayer();
   }
-
-  newGame();
-  selectedPlayer();
 
   function placeTokenOnBoard(player, position) {
     gameBoard[position] = player;
@@ -82,6 +88,8 @@ $(document).ready(function() {
         banner = $("#winner");
 
     if (winner !== undefined) {
+      $("aside.player").addClass("selected");
+
       if (winner) {
         banner.addClass("superman");
         message.html("Superman defeats Batman!");
@@ -91,6 +99,10 @@ $(document).ready(function() {
         message.html("Batman defeats Superman!");
         switchTurn();
       }
+
+      scores[winner]++;
+      displayScores();
+
       for (var x = 0; x < 9; x++) {
         if (winningMoves.indexOf(x) == -1) {
           $("div.box").eq(x).addClass("loser");
@@ -134,4 +146,7 @@ $(document).ready(function() {
 
     counter++;
   });
+
+  newGame();
+  selectedPlayer();
 });
